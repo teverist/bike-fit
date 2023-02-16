@@ -1,5 +1,5 @@
-const video5 = document.getElementsByClassName('input_video5')[0];
-const out5 = document.getElementsByClassName('output5')[0];
+const video5 = document.getElementsByClassName('video_input')[0];
+const out5 = document.getElementsByClassName('output')[0];
 const controlsElement5 = document.getElementsByClassName('control5')[0];
 const canvasCtx5 = out5.getContext('2d');
 
