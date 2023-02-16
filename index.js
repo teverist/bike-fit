@@ -1,7 +1,7 @@
-const video5 = document.getElementsByClassName('video_input')[0];
-const out5 = document.getElementsByClassName('output')[0];
+const input_video = document.getElementsByClassName('video_input')[0];
+const output_video = document.getElementsByClassName('output')[0];
 const controlsElement5 = document.getElementsByClassName('control5')[0];
-const canvasCtx5 = out5.getContext('2d');
+const canvasCtx5 = output_video.getContext('2d');
 
 const fpsControl = new FPS();
 
@@ -20,16 +20,16 @@ function onResultsPose(results) {
   fpsControl.tick();
 
   canvasCtx5.save();
-  canvasCtx5.clearRect(0, 0, out5.width, out5.height);
+  canvasCtx5.clearRect(0, 0, output_video.width, output_video.height);
   canvasCtx5.drawImage(
-      results.image, 0, 0, out5.width, out5.height);
+      results.image, 0, 0, output_video.width, output_video.height);
   drawConnectors(
       canvasCtx5, results.poseLandmarks, POSE_CONNECTIONS, {
         color: (data) => {
-          const x0 = out5.width * data.from.x;
-          const y0 = out5.height * data.from.y;
-          const x1 = out5.width * data.to.x;
-          const y1 = out5.height * data.to.y;
+          const x0 = output_video.width * data.from.x;
+          const y0 = output_video.height * data.from.y;
+          const x1 = output_video.width * data.to.x;
+          const y1 = output_video.height * data.to.y;
 
           const z0 = clamp(data.from.z + 0.5, 0, 1);
           const z1 = clamp(data.to.z + 0.5, 0, 1);
@@ -65,9 +65,9 @@ const pose = new Pose({locateFile: (file) => {
 }});
 pose.onResults(onResultsPose);
 
-const camera = new Camera(video5, {
+const camera = new Camera(input_video, {
   onFrame: async () => {
-    await pose.send({image: video5});
+    await pose.send({image: input_video});
   },
   width: 480,
   height: 480
