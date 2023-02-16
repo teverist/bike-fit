@@ -5,11 +5,6 @@ const canvasCtx5 = output_video.getContext('2d');
 
 const fpsControl = new FPS();
 
-const spinner = document.querySelector('.loading');
-spinner.ontransitionend = () => {
-  spinner.style.display = 'none';
-};
-
 function zColor(data) {
   const z = clamp(data.from.z + 0.5, 0, 1);
   return `rgba(0, ${255 * z}, ${255 * (1 - z)}, 1)`;
