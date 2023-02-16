@@ -1,0 +1,39 @@
+<!doctype html>
+<html class="h-full bg-slate-900">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- install tailwindcss from cdn, don't do this for production application -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- install pyodide version 0.20.0 -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.20.0/full/pyodide.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.1/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.1/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.2/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.2/pose.js" crossorigin="anonymous"></script>
+
+  <style>
+    /* set codemirror ide height to 100% of the textarea */
+    .video_input {
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="h-full overflow-hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+  <p class="text-slate-200 text-3xl my-4 font-extrabold mx-2 pt-8">Perform bike fit</p>
+  <div class="h-3/4 flex flex-row">
+    <div class="grid w-2/3 border-dashed border-2 border-slate-500 mx-2">
+      <!-- our code editor, where codemirror renders it's editor -->
+      <video id="video_input" name="video_input" class="h-full"></video>
+    </div>
+    <div class="grid w-1/3 border-dashed border-2 border-slate-500 mx-2">
+      <!-- output section where we show the stdout of the python code execution -->
+      <canvas  class="p-8 text-slate-200 bg-slate-900" id="output" name="output"></canvas>
+    </div>
+  </div>
+  <!-- run button to pass the code to pyodide.runPython() -->
+  <div class="control-panel">
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>
