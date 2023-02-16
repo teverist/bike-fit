@@ -101,6 +101,6 @@ new ControlPanel(controlsElement5, {
       }),
     ])
     .on(options => {
-      video5.classList.toggle('selfie', options.selfieMode);
+      output_video.classList.toggle('selfie', options.selfieMode);
       pose.setOptions(options);
     });
