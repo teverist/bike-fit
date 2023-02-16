@@ -24,12 +24,17 @@
   <div class="h-3/4 flex flex-row">
     <div class="grid w-1/2 border-dashed border-2 border-slate-500 mx-2">
       <!-- our code editor, where codemirror renders it's editor -->
-      <video id="video_input" name="video_input" class="video_input h-full"></video>
+      <video id="video_input" name="video_input" class="input_video5 h-full"></video>
     </div>
     <div class="grid w-1/2 border-dashed border-2 border-slate-500 mx-2">
       <!-- output section where we show the stdout of the python code execution -->
-      <canvas  class="output p-8 text-slate-200 bg-slate-900" id="output" name="output"></canvas>
+      <canvas  class="output5 p-8 text-slate-200 bg-slate-900" id="output" name="output"></canvas>
     </div>
+  </div>
+  <div class="loading">
+    <div class="spinner"></div>
+  </div>
+  <div style="visibility: hidden;" class="control5">
   </div>
   <!-- run button to pass the code to pyodide.runPython() -->
 </body>
