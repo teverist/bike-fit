@@ -10,6 +10,19 @@ spinner.ontransitionend = () => {
   spinner.style.display = 'none';
 };
 
+
+function calculateAngle(p1, p2, p3) {
+  const a = Math.sqrt(Math.pow(p2.x - p3.x, 2) + Math.pow(p2.y - p3.y, 2));
+  const b = Math.sqrt(Math.pow(p1.x - p3.x, 2) + Math.pow(p1.y - p3.y, 2));
+  const c = Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
+
+  const angle = Math.acos((b * b + c * c - a * a) / (2 * b * c)) * 180 / Math.PI; // Angle in degrees
+
+  return angle;
+}
+
+
+
 function zColor(data) {
   const z = clamp(data.from.z + 0.5, 0, 1);
   return `rgba(0, ${255 * z}, ${255 * (1 - z)}, 1)`;
