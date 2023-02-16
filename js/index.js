@@ -88,32 +88,37 @@ const camera = new Camera(video5, {
 camera.start();
 
 new ControlPanel(controlsElement5, {
-      selfieMode: true,
-      upperBodyOnly: false,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    })
-    .add([
-      new StaticText({title: 'MediaPipe Pose'}),
-      fpsControl,
-      new Toggle({title: 'Selfie Mode', field: 'selfieMode'}),
-      new Toggle({title: 'Upper-body Only', field: 'upperBodyOnly'}),
-      new Toggle({title: 'Smooth Landmarks', field: 'smoothLandmarks'}),
-      new Slider({
-        title: 'Min Detection Confidence',
-        field: 'minDetectionConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-      new Slider({
-        title: 'Min Tracking Confidence',
-        field: 'minTrackingConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-    ])
-    .on(options => {
-      video5.classList.toggle('selfie', options.selfieMode);
-      pose.setOptions(options);
-    });
+  cameraMode: true,
+  effect: 'background',
+})
+.add([
+  new StaticText({title: 'Options'}),
+  fpsControl,
+  new Toggle({title: 'Camera mode', field: 'cameraMode'}),
+  new SourcePicker({
+    onSourceChanged: () => {
+      // Resets because this model gives better results when reset between
+      // source changes.
+      pose.reset();
+    },
+    onFrame:
+        async (input, size) => {
+          const aspect = size.height / size.width;
+          let width, height;
+          if (window.innerWidth > window.innerHeight) {
+            height = window.innerHeight;
+            width = height / aspect;
+          } else {
+            width = window.innerWidth;
+            height = width * aspect;
+          }
+          canvasElement.width = width;
+          canvasElement.height = height;
+          await pose.send({image: input});
+        },
+  }),
+])
+.on(x => {
+  videoElement.classList.toggle('selfie', x.cameraMode);
+  pose.setOptions(optixons);
+});
