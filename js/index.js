@@ -1,6 +1,5 @@
 const input_video = document.getElementsByClassName('video_input')[0];
 const output_video = document.getElementsByClassName('output')[0];
-const controlsElement5 = document.getElementsByClassName('control5')[0];
 const canvasCtx5 = output_video.getContext('2d');
 
 const fpsControl = new FPS();
@@ -68,34 +67,3 @@ const camera = new Camera(input_video, {
   height: 480
 });
 camera.start();
-
-new ControlPanel(controlsElement5, {
-      selfieMode: true,
-      upperBodyOnly: false,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    })
-    .add([
-      new StaticText({title: 'MediaPipe Pose'}),
-      fpsControl,
-      new Toggle({title: 'Selfie Mode', field: 'selfieMode'}),
-      new Toggle({title: 'Upper-body Only', field: 'upperBodyOnly'}),
-      new Toggle({title: 'Smooth Landmarks', field: 'smoothLandmarks'}),
-      new Slider({
-        title: 'Min Detection Confidence',
-        field: 'minDetectionConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-      new Slider({
-        title: 'Min Tracking Confidence',
-        field: 'minTrackingConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-    ])
-    .on(options => {
-      output_video.classList.toggle('selfie', options.selfieMode);
-      pose.setOptions(options);
-    });
