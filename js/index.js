@@ -1,7 +1,7 @@
-const video5 = document.getElementsByClassName('input_video5')[0];
-const out5 = document.getElementsByClassName('output5')[0];
+const videoElement = document.getElementsByClassName('input_video5')[0];
+const canvasElement = document.getElementsByClassName('output5')[0];
 const controlsElement5 = document.getElementsByClassName('control5')[0];
-const canvasCtx5 = out5.getContext('2d');
+const canvasCtx5 = canvasElement.getContext('2d');
 
 const fpsControl = new FPS();
 
@@ -32,45 +32,33 @@ function onResultsPose(results) {
   document.body.classList.add('loaded');
   fpsControl.tick();
 
+  // Draw the overlays
   canvasCtx5.save();
-  canvasCtx5.clearRect(0, 0, out5.width, out5.height);
+  canvasCtx5.clearRect(0, 0, canvasElement.width, canvasElement.height);
   canvasCtx5.drawImage(
-      results.image, 0, 0, out5.width, out5.height);
-  drawConnectors(
-      canvasCtx5, results.poseLandmarks, POSE_CONNECTIONS, {
-        color: (data) => {
-          const x0 = out5.width * data.from.x;
-          const y0 = out5.height * data.from.y;
-          const x1 = out5.width * data.to.x;
-          const y1 = out5.height * data.to.y;
-
-          const z0 = clamp(data.from.z + 0.5, 0, 1);
-          const z1 = clamp(data.to.z + 0.5, 0, 1);
-
-          const gradient = canvasCtx5.createLinearGradient(x0, y0, x1, y1);
-          gradient.addColorStop(
-              0, `rgba(0, ${255 * z0}, ${255 * (1 - z0)}, 1)`);
-          gradient.addColorStop(
-              1.0, `rgba(0, ${255 * z1}, ${255 * (1 - z1)}, 1)`);
-          return gradient;
-        }
-      });
-  drawLandmarks(
-      canvasCtx5,
-      Object.values(POSE_LANDMARKS_LEFT)
-          .map(index => results.poseLandmarks[index]),
-      {color: zColor, fillColor: '#FF0000'});
-  drawLandmarks(
-      canvasCtx5,
-      Object.values(POSE_LANDMARKS_RIGHT)
-          .map(index => results.poseLandmarks[index]),
-      {color: zColor, fillColor: '#00FF00'});
-  drawLandmarks(
-      canvasCtx5,
-      Object.values(POSE_LANDMARKS_NEUTRAL)
-          .map(index => results.poseLandmarks[index]),
-      {color: zColor, fillColor: '#AAAAAA'});
+      results.image, 0, 0, canvasElement.width, canvasElement.height);
+  if (results.poseLandmarks) {
+    drawingUtils.drawConnectors(
+        canvasCtx5, results.poseLandmarks, pose.POSE_CONNECTIONS,
+        {visibilityMin: 0.65, color: 'white'});
+    drawingUtils.drawLandmarks(
+        canvasCtx5,
+        Object.values(pose.POSE_LANDMARKS_LEFT)
+            .map(index => results.poseLandmarks[index]),
+        {visibilityMin: 0.65, color: 'white', fillColor: 'rgb(255,138,0)'});
+    drawingUtils.drawLandmarks(
+        canvasCtx5,
+        Object.values(pose.POSE_LANDMARKS_RIGHT)
+            .map(index => results.poseLandmarks[index]),
+        {visibilityMin: 0.65, color: 'white', fillColor: 'rgb(0,217,231)'});
+    drawingUtils.drawLandmarks(
+        canvasCtx5,
+        Object.values(pose.POSE_LANDMARKS_NEUTRAL)
+            .map(index => results.poseLandmarks[index]),
+        {visibilityMin: 0.65, color: 'white', fillColor: 'white'});
+  }
   canvasCtx5.restore();
+    
 }
 
 const pose = new Pose({locateFile: (file) => {
@@ -78,9 +66,9 @@ const pose = new Pose({locateFile: (file) => {
 }});
 pose.onResults(onResultsPose);
 
-const camera = new Camera(video5, {
+const camera = new Camera(videoElement, {
   onFrame: async () => {
-    await pose.send({image: video5});
+    await pose.send({image: videoElement});
   },
   width: 480,
   height: 480
@@ -88,32 +76,37 @@ const camera = new Camera(video5, {
 camera.start();
 
 new ControlPanel(controlsElement5, {
-      selfieMode: true,
-      upperBodyOnly: false,
-      smoothLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    })
-    .add([
-      new StaticText({title: 'MediaPipe Pose'}),
-      fpsControl,
-      new Toggle({title: 'Selfie Mode', field: 'selfieMode'}),
-      new Toggle({title: 'Upper-body Only', field: 'upperBodyOnly'}),
-      new Toggle({title: 'Smooth Landmarks', field: 'smoothLandmarks'}),
-      new Slider({
-        title: 'Min Detection Confidence',
-        field: 'minDetectionConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-      new Slider({
-        title: 'Min Tracking Confidence',
-        field: 'minTrackingConfidence',
-        range: [0, 1],
-        step: 0.01
-      }),
-    ])
-    .on(options => {
-      video5.classList.toggle('selfie', options.selfieMode);
-      pose.setOptions(options);
-    });
+  cameraMode: true,
+  effect: 'background',
+})
+.add([
+  new StaticText({title: 'Options'}),
+  fpsControl,
+  new Toggle({title: 'Camera mode', field: 'cameraMode'}),
+  new SourcePicker({
+    onSourceChanged: () => {
+      // Resets because this model gives better results when reset between
+      // source changes.
+      pose.reset();
+    },
+    onFrame:
+        async (input, size) => {
+          const aspect = size.height / size.width;
+          let width, height;
+          if (window.innerWidth > window.innerHeight) {
+            height = window.innerHeight;
+            width = height / aspect;
+          } else {
+            width = window.innerWidth;
+            height = width * aspect;
+          }
+          canvasElement.width = width;
+          canvasElement.height = height;
+          await pose.send({image: input});
+        },
+  }),
+])
+.on(x => {
+  videoElement.classList.toggle('selfie', x.cameraMode);
+  pose.setOptions(optixons);
+});
